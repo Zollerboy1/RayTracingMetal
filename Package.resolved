@@ -1,0 +1,32 @@
+{
+  "pins" : [
+    {
+      "identity" : "glad",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Zollerboy1/glad.git",
+      "state" : {
+        "revision" : "141288aafc68624cf2ad4144c7c10ca7f8f836dc",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "glfw",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Zollerboy1/GLFW.git",
+      "state" : {
+        "revision" : "9e9f6e213a4e4059cdac99ccc98b48d91ab0d2bd",
+        "version" : "1.1.1"
+      }
+    },
+    {
+      "identity" : "imgui",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Zollerboy1/ImGui.git",
+      "state" : {
+        "revision" : "e7f7401f214ee6dc242cd782b14d1329e3516b56",
+        "version" : "2.3.0"
+      }
+    }
+  ],
+  "version" : 2
+}
