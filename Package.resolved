@@ -23,8 +23,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Zollerboy1/ImGui.git",
       "state" : {
-        "revision" : "e7f7401f214ee6dc242cd782b14d1329e3516b56",
-        "version" : "2.3.0"
+        "revision" : "4d29e40b4c50db92a360edbd825b140405350995",
+        "version" : "2.3.1"
+      }
+    },
+    {
+      "identity" : "swiftysimd",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Zollerboy1/SwiftySIMD.git",
+      "state" : {
+        "revision" : "7c3c56b6443d00ed48ecd9cb5e212c57103913b7",
+        "version" : "0.1.1"
       }
     }
   ],

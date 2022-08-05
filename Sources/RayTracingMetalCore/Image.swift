@@ -9,9 +9,9 @@ import ImGui
 import Metal
 
 public struct Image {
-    private let region: MTLRegion
-    private let textureDescriptor: MTLTextureDescriptor
-    private let texture: MTLTexture
+    private var region: MTLRegion
+    private var textureDescriptor: MTLTextureDescriptor
+    private var texture: MTLTexture
     
     public var width: Int {
         self.region.size.width
@@ -45,5 +45,23 @@ public struct Image {
             
             self.texture.replace(region: self.region, mipmapLevel: 0, withBytes: rawData, bytesPerRow: 4 * self.width)
         }
+    }
+    
+    public mutating func resize(newWidth: Int, newHeight: Int) -> Bool {
+        guard newWidth != self.width || newHeight != self.height else {
+            return false
+        }
+        
+        
+        self.region = .init(origin: .init(), size: .init(width: newWidth, height: newHeight, depth: 1))
+        
+        self.textureDescriptor = MTLTextureDescriptor()
+        self.textureDescriptor.width = newWidth
+        self.textureDescriptor.height = newHeight
+        self.textureDescriptor.pixelFormat = .bgra8Unorm
+        
+        self.texture = Application.shared.device.makeTexture(descriptor: self.textureDescriptor)!
+        
+        return true
     }
 }

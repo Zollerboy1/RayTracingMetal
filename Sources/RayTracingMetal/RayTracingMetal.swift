@@ -12,18 +12,16 @@ import RayTracingMetalCore
 class ExampleLayer: Layer {
     private var viewportWidth, viewportHeight: Int
     private var lastRenderTime: Double
-    private var rng: XORShift128Plus
     private var isRendering: Bool
-    private var image: Image?
-    private var imageBuffer: UnsafeMutableBufferPointer<UInt32>?
+    private let renderer: Renderer
 
     
     init() {
         self.viewportWidth = 0
         self.viewportHeight = 0
         self.lastRenderTime = 0
-        self.rng = .init()
         self.isRendering = false
+        self.renderer = .init()
     }
     
     func onUIRender() {
@@ -46,9 +44,8 @@ class ExampleLayer: Layer {
         self.viewportWidth = Int(viewportSize.x)
         self.viewportHeight = Int(viewportSize.y)
         
-        if let image = self.image {
-            ImGui.image(withTextureID: image.textureID, size: .init(x: Float(image.width), y: Float(image.height)))
-        }
+        let image = self.renderer.finalImage
+        ImGui.image(withTextureID: image.textureID, size: .init(x: Float(image.width), y: Float(image.height)), uv0: .init(x: 0, y: 1), uv1: .init(x: 1, y: 0))
         
         ImGui.end()
         ImGui.popStyleVar()
@@ -60,17 +57,9 @@ class ExampleLayer: Layer {
 
         let startTime = DispatchTime.now().uptimeNanoseconds
         
-        if self.image == nil || self.image?.width != self.viewportWidth || self.image?.width != self.viewportHeight {
-            self.image = .init(width: self.viewportWidth, height: self.viewportHeight)
-            self.imageBuffer?.deallocate()
-            self.imageBuffer = .allocate(capacity: self.viewportWidth * self.viewportHeight)
-        }
+        self.renderer.onResize(newWidth: self.viewportWidth, newHeight: self.viewportHeight)
         
-        for i in 0..<(self.viewportWidth * self.viewportHeight) {
-            self.imageBuffer?[i] = .random(in: 0xFF000000...0xFFFFFFFF, using: &self.rng)
-        }
-        
-        self.image?.setData(self.imageBuffer.map(UnsafeBufferPointer.init))
+        self.renderer.render()
         
         let endTime = DispatchTime.now().uptimeNanoseconds
         self.lastRenderTime = Double(endTime - startTime) / 1_000_000
