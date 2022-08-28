@@ -6,6 +6,7 @@
 //
 
 import cRayTracingMetalCore
+import SwiftySIMD
 
 public struct ColorRGBA {
     @usableFromInline
@@ -46,6 +47,18 @@ public struct ColorRGBA {
     @inlinable
     public init(white: UInt8, alpha: UInt8 = 0xFF) {
         self.init(value: (UInt32(alpha) << 24) | (UInt32(white) << 16) | (UInt32(white) << 8) | (UInt32(white)))
+    }
+    
+    @inlinable
+    public init(fromVector vector: Vector4) {
+        let clamped = clamp(vector, min: 0, max: 1)
+        
+        let red = UInt8(clamped.x * 255)
+        let green = UInt8(clamped.y * 255)
+        let blue = UInt8(clamped.z * 255)
+        let alpha = UInt8(clamped.w * 255)
+        
+        self.init(red: red, green: green, blue: blue, alpha: alpha)
     }
     
     

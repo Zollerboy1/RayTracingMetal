@@ -25,7 +25,7 @@ public struct Image {
         Unmanaged<MTLTexture>.passUnretained(self.texture).toOpaque()
     }
     
-    public init(width: Int, height: Int, data: UnsafeBufferPointer<UInt32>? = nil) {
+    public init(width: Int, height: Int, data: UnsafeBufferPointer<ColorRGBA>? = nil) {
         self.region = .init(origin: .init(), size: .init(width: width, height: height, depth: 1))
         
         self.textureDescriptor = MTLTextureDescriptor()
@@ -38,7 +38,7 @@ public struct Image {
         self.setData(data)
     }
     
-    public func setData(_ data: UnsafeBufferPointer<UInt32>?) {
+    public func setData(_ data: UnsafeBufferPointer<ColorRGBA>?) {
         if let data = data,
            let rawData = UnsafeRawPointer(data.baseAddress) {
             precondition(data.count == width * height)

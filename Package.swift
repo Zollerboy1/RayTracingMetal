@@ -33,6 +33,7 @@ let package = Package(
                 "cRayTracingMetalCore",
                 "GLFW",
                 "ImGui",
+                "SwiftySIMD",
                 .product(name: "ImGuiImplMetal", package: "ImGui")
             ],
             resources: [

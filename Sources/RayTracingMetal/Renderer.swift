@@ -11,7 +11,7 @@ import RayTracingMetalCore
 class Renderer {
     private(set) var finalImage: Image
     
-    private var imageBuffer: UnsafeMutableBufferPointer<UInt32>
+    private var imageBuffer: UnsafeMutableBufferPointer<ColorRGBA>
     private var time: Float
     private var lightDirection: Vector3
     
@@ -19,7 +19,7 @@ class Renderer {
         self.finalImage = .init(width: 1, height: 1)
         self.imageBuffer = .allocate(capacity: 1)
         self.time = 0
-        self.lightDirection = .init(x: 10, y: -5, z: 0)
+        self.lightDirection = .init(x: 10, y: -5, z: 0).normalized
     }
     
     func onResize(newWidth: Int, newHeight: Int) {
@@ -40,38 +40,40 @@ class Renderer {
                 
                 coordinates.x *= aspectRatio
                 
-                self.imageBuffer[x + y * width] = self.pixel(for: coordinates)
+                let color = self.pixel(for: coordinates)
+                
+                self.imageBuffer[x + y * width] = .init(fromVector: color)
             }
         }
         
         self.finalImage.setData(UnsafeBufferPointer(self.imageBuffer))
         
         self.time += 0.01
-        self.lightDirection = .init(x: cos(self.time) * 10, y: cos(self.time * 2.4) * -10, z: sin(self.time) * -10)
+        self.lightDirection = .init(x: cos(self.time) * 10, y: cos(self.time * 2.4) * -10, z: sin(self.time) * -10).normalized
     }
     
-    private func pixel(for coordinates: Vector2) -> UInt32 {
-        let rayOrigin = Vector3(x: 0, y: 0, z: 2)
-        let rayDirection = Vector3(coordinates, -1)
+    private func pixel(for coordinates: Vector2) -> Vector4 {
+        let rayOrigin = Vector3(x: 0, y: 0, z: 1.5)
+        let rayDirection = Vector3(coordinates, -1).normalized
         let radius: Float = 0.5
         
-        let a = rayDirection.lengthSquared
+        let a: Float = 1
         let b = 2 * rayOrigin.dotProduct(with: rayDirection)
         let c = rayOrigin.lengthSquared - radius * radius
         
         let discriminant = b * b - 4 * a * c
         
-        if discriminant >= 0 {
-            let t = (-b - discriminant.squareRoot()) / (2 * a)
-            let hitPoint = rayOrigin + rayDirection.normalized * t
-            
-            let lightAngle = max(min(hitPoint.dotProduct(with: -self.lightDirection) / 6, 1), 0)
-            
-            let lightedColor = simd_uchar4(x: 255, y: 0, z: UInt8(lightAngle * 255), w: UInt8(lightAngle * 255))
-            
-            return unsafeBitCast(lightedColor, to: UInt32.self)
-        } else {
-            return 0xFF000000
+        guard discriminant >= 0 else {
+            return .init(x: 0, y: 0, z: 0, w: 1)
         }
+        
+        let t = (-b - discriminant.squareRoot()) / (2 * a)
+        let hitPoint = rayOrigin + rayDirection * t
+        
+        let normal = hitPoint / radius
+
+        let lightAngle = max(normal.dotProduct(with: -self.lightDirection), 0)
+
+        return .init(x: lightAngle, y: 0, z: lightAngle, w: 1)
     }
 }
