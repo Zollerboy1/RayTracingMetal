@@ -14,6 +14,7 @@ class ExampleLayer: Layer {
     private var lastRenderTime: Double
     private var isRendering: Bool
     private let renderer: Renderer
+    private let camera: Camera
 
     
     init() {
@@ -22,7 +23,14 @@ class ExampleLayer: Layer {
         self.lastRenderTime = 0
         self.isRendering = false
         self.renderer = .init()
+        self.camera = .init(verticalFOV: 45, nearClip: 0.1, farClip: 100)
     }
+    
+    
+    func onUpdate(timeStep: Duration) {
+        self.camera.onUpdate(timeStep: timeStep)
+    }
+    
     
     func onUIRender() {
         ImGui.begin(withName: "Settings")
@@ -58,8 +66,9 @@ class ExampleLayer: Layer {
         let startTime = DispatchTime.now().uptimeNanoseconds
         
         self.renderer.onResize(newWidth: self.viewportWidth, newHeight: self.viewportHeight)
+        self.camera.onResize(newWidth: self.viewportWidth, newHeight: self.viewportHeight)
         
-        self.renderer.render()
+        self.renderer.render(withCamera: self.camera)
         
         let endTime = DispatchTime.now().uptimeNanoseconds
         self.lastRenderTime = Double(endTime - startTime) / 1_000_000

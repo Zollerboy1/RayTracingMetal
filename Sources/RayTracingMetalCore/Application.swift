@@ -14,6 +14,9 @@ import Metal
 
 
 open class Application {
+    public typealias Instant = SuspendingClock.Instant
+    
+    
     public private(set) static var shared: Application!
     
     
@@ -47,7 +50,10 @@ open class Application {
     private var layers: [Layer]
     private var isRunning: Bool
     
-    private let glfwWindow: OpaquePointer
+    private var timeStep: Duration
+    private var lastFrameTime: Instant
+    
+    internal let glfwWindow: OpaquePointer
     
     private let commandQueue: MTLCommandQueue
     private let renderPassDescriptor: MTLRenderPassDescriptor
@@ -59,6 +65,9 @@ open class Application {
         
         self.layers = []
         self.isRunning = false
+        
+        self.timeStep = .zero
+        self.lastFrameTime = .now
         
         
         guard ImGui.checkVersion() else {
@@ -168,6 +177,11 @@ open class Application {
         while glfwWindowShouldClose(self.glfwWindow) == GLFW_FALSE && self.isRunning {
             glfwPollEvents()
             
+            for layer in self.layers {
+                layer.onUpdate(timeStep: self.timeStep)
+            }
+            
+            
             var width: Int32 = 0
             var height: Int32 = 0
             glfwGetFramebufferSize(self.glfwWindow, &width, &height)
@@ -247,6 +261,11 @@ open class Application {
             }
 
             self.currentCommandBuffer = nil
+            
+            
+            let time = Instant.now
+            self.timeStep = self.lastFrameTime.duration(to: time)
+            self.lastFrameTime = time
         }
     }
 }

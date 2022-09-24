@@ -8,6 +8,7 @@
 public protocol Layer: AnyObject {
     func onAttach()
     func onDetach()
+    func onUpdate(timeStep: Duration)
     func onUIRender()
     func onRenderEnd()
 }
@@ -15,6 +16,7 @@ public protocol Layer: AnyObject {
 extension Layer {
     public func onAttach() {}
     public func onDetach() {}
+    public func onUpdate(timeStep: Duration) {}
     public func onUIRender() {}
     public func onRenderEnd() {}
 }

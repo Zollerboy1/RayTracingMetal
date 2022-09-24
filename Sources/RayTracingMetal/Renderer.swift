@@ -12,13 +12,11 @@ class Renderer {
     private(set) var finalImage: Image
     
     private var imageBuffer: UnsafeMutableBufferPointer<ColorRGBA>
-    private var time: Float
     private var lightDirection: Vector3
     
     init() {
         self.finalImage = .init(width: 1, height: 1)
         self.imageBuffer = .allocate(capacity: 1)
-        self.time = 0
         self.lightDirection = .init(x: 10, y: -5, z: 0).normalized
     }
     
@@ -29,37 +27,31 @@ class Renderer {
         }
     }
     
-    func render() {
+    func render(withCamera camera: Camera) {
+        let rayOrigin = camera.position
+        
         let width = self.finalImage.width
         let height = self.finalImage.height
-        let aspectRatio = Float(width) / Float(height)
         
         for y in 0..<height {
             for x in 0..<width {
-                var coordinates = Vector2(x: Float(x) / Float(width), y: Float(y) / Float(height)) * 2 - 1
+                let rayDirection = camera.rayDirections[x + y * width]
                 
-                coordinates.x *= aspectRatio
-                
-                let color = self.pixel(for: coordinates)
+                let color = self.trace(ray: .init(origin: rayOrigin, direction: rayDirection))
                 
                 self.imageBuffer[x + y * width] = .init(fromVector: color)
             }
         }
         
         self.finalImage.setData(UnsafeBufferPointer(self.imageBuffer))
-        
-        self.time += 0.01
-        self.lightDirection = .init(x: cos(self.time) * 10, y: cos(self.time * 2.4) * -10, z: sin(self.time) * -10).normalized
     }
     
-    private func pixel(for coordinates: Vector2) -> Vector4 {
-        let rayOrigin = Vector3(x: 0, y: 0, z: 1.5)
-        let rayDirection = Vector3(coordinates, -1).normalized
+    private func trace(ray: Ray) -> Vector4 {
         let radius: Float = 0.5
         
-        let a: Float = 1
-        let b = 2 * rayOrigin.dotProduct(with: rayDirection)
-        let c = rayOrigin.lengthSquared - radius * radius
+        let a = ray.direction.lengthSquared
+        let b = 2 * ray.origin.dotProduct(with: ray.direction)
+        let c = ray.origin.lengthSquared - radius * radius
         
         let discriminant = b * b - 4 * a * c
         
@@ -68,7 +60,7 @@ class Renderer {
         }
         
         let t = (-b - discriminant.squareRoot()) / (2 * a)
-        let hitPoint = rayOrigin + rayDirection * t
+        let hitPoint = ray.origin + ray.direction * t
         
         let normal = hitPoint / radius
 
