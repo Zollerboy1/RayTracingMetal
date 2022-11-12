@@ -34,8 +34,8 @@ class Camera {
         self.view = .init(diagonal: .one)
         self.inverseView = .init(diagonal: .one)
         
-        self.position = .init(x: 0, y: 0, z: -1)
-        self.direction = .init(x: 0, y: 0, z: 3)
+        self.position = .init(x: 0, y: 0, z: 10)
+        self.direction = .init(x: 0, y: 0, z: -1)
         
         self.rayDirections = []
         
@@ -43,6 +43,8 @@ class Camera {
         
         self.viewportWidth = 0
         self.viewportHeight = 0
+        
+        self.recalculateView()
     }
     
     func onUpdate(timeStep: Duration) {

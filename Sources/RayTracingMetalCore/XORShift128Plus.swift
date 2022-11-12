@@ -19,6 +19,12 @@ public struct XORShift128Plus: RandomNumberGenerator {
 
         self._state = (state0, state1)
     }
+    
+    @inlinable
+    public init(withInitialState state: (UInt64, UInt64)) {
+        precondition(state.0 != 0 && state.1 != 0)
+        self._state = state
+    }
 
     @inlinable
     public mutating func next() -> UInt64 {

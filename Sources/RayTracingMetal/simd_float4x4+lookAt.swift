@@ -41,8 +41,8 @@ extension simd_float4x4 {
         var result = simd_float4x4(0)
         result[0][0] = w
         result[1][1] = h
-        result[2][2] = (zFar + zNear) / (zFar - zNear)
-        result[2][3] = 1
+        result[2][2] = -(zFar + zNear) / (zFar - zNear)
+        result[2][3] = -1
         result[3][2] = -(2 * zFar * zNear) / (zFar - zNear)
         return result
     }
