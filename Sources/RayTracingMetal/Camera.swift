@@ -47,14 +47,14 @@ class Camera {
         self.recalculateView()
     }
     
-    func onUpdate(timeStep: Duration) {
+    func onUpdate(timeStep: Duration) -> Bool {
         let mousePosition = Input.mousePosition
         let mouseDelta = (mousePosition - self.lastMousePosition) * 0.002
         self.lastMousePosition = mousePosition
         
         if !Input.isMouseButtonDown(.right) {
             Input.setCursorMode(to: .normal)
-            return
+            return false
         }
         
         Input.setCursorMode(to: .locked)
@@ -105,6 +105,8 @@ class Camera {
             self.recalculateView()
             self.recalculateRayDirections()
         }
+        
+        return moved
     }
     
     func onResize(newWidth: Int, newHeight: Int) {

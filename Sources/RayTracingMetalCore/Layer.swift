@@ -10,7 +10,7 @@ public protocol Layer: AnyObject {
     func onDetach()
     func onUpdate(timeStep: Duration)
     func onUIRender()
-    func onRenderEnd()
+    func onRenderEnd() async
 }
 
 extension Layer {

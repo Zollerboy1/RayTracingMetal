@@ -23,8 +23,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/Zollerboy1/ImGui.git",
       "state" : {
-        "revision" : "4d29e40b4c50db92a360edbd825b140405350995",
-        "version" : "2.3.1"
+        "revision" : "f0201cf8386b0f8d90162c6bc98d51da1d7fc7ef",
+        "version" : "2.4.1"
       }
     },
     {

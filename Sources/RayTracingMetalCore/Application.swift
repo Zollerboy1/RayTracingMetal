@@ -79,7 +79,7 @@ open class Application {
         let io = ImGui.getIO()
         io[\.ConfigFlags].pointee |= ImGuiConfigFlags.navEnableKeyboard.rawValue
         io[\.ConfigFlags].pointee |= ImGuiConfigFlags.dockingEnable.rawValue
-        // io[\.ConfigFlags].pointee |= ImGuiConfigFlags.viewportsEnable.rawValue
+        io[\.ConfigFlags].pointee |= ImGuiConfigFlags.viewportsEnable.rawValue
         
         ImGui.styleColorsDark()
         
@@ -162,16 +162,18 @@ open class Application {
     open func initMenubar() {}
     
     
-    public static func main() throws {
+    @MainActor
+    public static func main() async throws {
         Self.shared = try Self.init()
         Self.shared.initLayers()
         Self.shared.initMenubar()
         
-        Self.shared.run()
+        await Self.shared.run()
     }
     
     
-    private func run() {
+    @MainActor
+    private func run() async {
         self.isRunning = true
         
         while glfwWindowShouldClose(self.glfwWindow) == GLFW_FALSE && self.isRunning {
@@ -257,7 +259,7 @@ open class Application {
 
 
             for layer in self.layers {
-                layer.onRenderEnd()
+                await layer.onRenderEnd()
             }
 
             self.currentCommandBuffer = nil
